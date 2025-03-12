@@ -12,8 +12,20 @@ const NoteScreen = () => {
   const [newNote, setNewNote] = useState('');
 
   //Add New Note
+  const addNote = () => {
+    if(newNote.trim() === '') return;
 
-  return (<View style={styles.container}>
+    setNotes((prevNotes) => [
+      ...prevNotes,
+      {id: Date.now.toString(), text: newNote},
+    ]);
+    
+    setNewNote('');
+    setModalVisible(false);
+  }
+
+  return (
+  <View style={styles.container}>
     <FlatList
       data={notes}
       keyExtractor={(item) => item.id}
