@@ -71,6 +71,24 @@ const NoteScreen = () => {
       },
     ]);
   };
+  //Edit Note
+  const editNote = async (id, newText) => {
+    if (!newText.trim()) {
+      Alert.alert("Error", "Note text cannot be empty");
+      return;
+    }
+    const response = await noteService.updateNote(id, newText);
+    if (response.error) {
+      Alert.alert("Error", response.error);
+    } else {
+      console.log(response.data);
+      setNotes((prevNotes) =>
+        prevNotes.map((n) =>
+          n.$id === id ? { ...n, text: response.data.text } : n
+        )
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -79,7 +97,11 @@ const NoteScreen = () => {
       ) : (
         <>
           {error && <Text style={styles.errorText}>{error}</Text>}
-          <NoteList notes={notes} onDelete={deleteNote}></NoteList>
+          <NoteList
+            notes={notes}
+            onDelete={deleteNote}
+            onEdit={editNote}
+          ></NoteList>
         </>
       )}
 

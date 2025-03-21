@@ -1,12 +1,59 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useRef, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
 
-const NoteItem = ({ note, onDelete }) => {
+const NoteItem = ({ note, onDelete, onEdit }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedText, setEditedText] = useState(note.text);
+  const inputRef = useRef(null);
+
+  const handleSave = () => {
+    if (editedText.trim() === "") return;
+    onEdit(note.$id, editedText);
+    setIsEditing(false);
+  };
+
   return (
     <View style={styles.noteItem}>
-      <Text style={styles.noteText}> {note.text} </Text>
-      <TouchableOpacity onPress={() => onDelete(note.$id)}>
-        <Text style={styles.delete}>❌</Text>
-      </TouchableOpacity>
+      {isEditing ? (
+        <TextInput
+          ref={inputRef}
+          style={styles.input}
+          value={editedText}
+          onChangeText={setEditedText}
+          autoFocus
+          onSubmitEditing={handleSave}
+          returnKeyType="done"
+        />
+      ) : (
+        <Text style={styles.noteText}> {note.text} </Text>
+      )}
+
+      <View style={styles.actions}>
+        {isEditing ? (
+          <TouchableOpacity
+            onPress={() => {
+              handleSave();
+              inputRef.current?.blur();
+            }}
+          >
+            <Text style={styles.update}>💾</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => setIsEditing(true)}>
+            <Text style={styles.update}>✏️</Text>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity onPress={() => onDelete(note.$id)}>
+          <Text style={styles.delete}>❌</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -26,6 +73,20 @@ const styles = StyleSheet.create({
   delete: {
     fontSize: 18,
     color: "red",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    fontSize: 18,
+  },
+  update: {
+    fontSize: 18,
+    color: "blue",
+    marginRight: 10,
+  },
+  actions: {
+    flexDirection: "row",
   },
 });
 
