@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }) => {
 
   //LOGOUT
   const logout = async () => {
-    await authService.logout;
+    await authService.logout();
     setUser(null);
     await checkUser();
   };
