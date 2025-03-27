@@ -1,16 +1,42 @@
-import React, { useState } from 'react'
-import { Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native'
-import PostItImage from '@/assets/images/sticky-notes.png'
+import React, { useEffect, useState } from 'react';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import PostItImage from '@/assets/images/sticky-notes.png';
 import { useRouter } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
 
 const HomeScreen = () => {
+  const { user, loading } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.replace('/notes');
+    }
+  }, [user, loading]);
+
+  if (loading) {
+    return (
+      <View style={styles.centeredContainer}>
+        <ActivityIndicator size='large' color='#007bff' />
+      </View>
+    );
+  }
+
   return (
     <>
       <View style={styles.container}>
         <Image source={PostItImage} style={styles.image}></Image>
         <Text style={styles.title}>Welcome to Notes App !</Text>
-        <Text style={styles.subtitle}>Capture your thought anytime, anywhere...</Text>
+        <Text style={styles.subtitle}>
+          Capture your thought anytime, anywhere...
+        </Text>
         <TouchableOpacity
           style={styles.button}
           onPress={() => router.push('/notes')}
@@ -42,7 +68,7 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 10,
   },
-  subtitle:{
+  subtitle: {
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
@@ -55,11 +81,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
-  buttonText:{
+  buttonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
   },
-})
+  centeredContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    textAlign: 'center',
+  },
+});
 
-export default HomeScreen
+export default HomeScreen;
