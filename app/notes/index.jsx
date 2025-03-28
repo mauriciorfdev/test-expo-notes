@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,12 +6,12 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
-} from "react-native";
-import { useRouter } from "expo-router";
-import { useAuth } from "@/contexts/AuthContext";
-import NoteList from "@/components/NoteList";
-import AddNoteModal from "@/components/AddNoteModal";
-import noteService from "@/services/noteService";
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '@/contexts/AuthContext';
+import NoteList from '@/components/NoteList';
+import AddNoteModal from '@/components/AddNoteModal';
+import noteService from '@/services/noteService';
 
 const NoteScreen = () => {
   const router = useRouter();
@@ -19,13 +19,13 @@ const NoteScreen = () => {
 
   const [notes, setNotes] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [newNote, setNewNote] = useState("");
+  const [newNote, setNewNote] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.replace("/auth");
+      router.replace('/auth');
     }
   }, [user, authLoading]);
 
@@ -37,10 +37,10 @@ const NoteScreen = () => {
 
   const fetchNotes = async () => {
     setLoading(true);
-    const response = await noteService.getNotes();
+    const response = await noteService.getNotes(user.$id);
     if (response.error) {
       setError(response.error);
-      Alert.alert("Error", response.error);
+      Alert.alert('Error', response.error);
     } else {
       setNotes(response.data);
       setError(null);
@@ -50,33 +50,33 @@ const NoteScreen = () => {
 
   //Add New Note
   const addNote = async () => {
-    if (newNote.trim() === "") return;
+    if (newNote.trim() === '') return;
 
-    const response = await noteService.addNote(newNote);
+    const response = await noteService.addNote(user.$id, newNote);
 
     if (response.error) {
-      Alert.alert("Error", response.error);
+      Alert.alert('Error', response.error);
     } else {
       setNotes([...notes, response.data]);
-      setNewNote("");
+      setNewNote('');
       setModalVisible(false);
     }
   };
 
   //Delete Note
   const deleteNote = async (id) => {
-    Alert.alert("Delete Note", "Are you sure you want to delete this note?", [
+    Alert.alert('Delete Note', 'Are you sure you want to delete this note?', [
       {
-        text: "Cancel",
-        style: "cancel",
+        text: 'Cancel',
+        style: 'cancel',
       },
       {
-        text: "Delete",
-        style: "destructive",
+        text: 'Delete',
+        style: 'destructive',
         onPress: async () => {
           const response = await noteService.deleteNote(id);
           if (response.error) {
-            Alert.alert("Error", response.error);
+            Alert.alert('Error', response.error);
           } else {
             setNotes(notes.filter((n) => n.$id !== id));
           }
@@ -87,12 +87,12 @@ const NoteScreen = () => {
   //Edit Note
   const editNote = async (id, newText) => {
     if (!newText.trim()) {
-      Alert.alert("Error", "Note text cannot be empty");
+      Alert.alert('Error', 'Note text cannot be empty');
       return;
     }
     const response = await noteService.updateNote(id, newText);
     if (response.error) {
-      Alert.alert("Error", response.error);
+      Alert.alert('Error', response.error);
     } else {
       console.log(response.data);
       setNotes((prevNotes) =>
@@ -110,11 +110,11 @@ const NoteScreen = () => {
       ) : (
         <>
           {error && <Text style={styles.errorText}>{error}</Text>}
-          <NoteList
-            notes={notes}
-            onDelete={deleteNote}
-            onEdit={editNote}
-          ></NoteList>
+          {notes.length === 0 ? (
+            <Text style={styles.noNotesText}>You have no notes</Text>
+          ) : (
+            <NoteList notes={notes} onDelete={deleteNote} onEdit={editNote} />
+          )}
         </>
       )}
 
@@ -141,28 +141,35 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   addButton: {
-    position: "absolute",
+    position: 'absolute',
     right: 20,
     left: 20,
     bottom: 20,
-    backgroundColor: "#007bff",
+    backgroundColor: '#007bff',
     padding: 15,
     borderRadius: 8,
-    alignItems: "center",
+    alignItems: 'center',
   },
   addButtonText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   errorText: {
-    color: "red",
-    textAlign: "center",
+    color: 'red',
+    textAlign: 'center',
     marginBottom: 10,
     fontSize: 16,
+  },
+  noNotesText: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    fontSize: 18,
+    color: '#555',
+    marginTop: 15,
   },
 });
 
