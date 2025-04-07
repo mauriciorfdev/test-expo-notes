@@ -37,6 +37,15 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "owner": "mrfdev",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "7b49871a-57f8-40cd-bfc1-65b8a457a3ff"
+      }
     }
   }
 }
