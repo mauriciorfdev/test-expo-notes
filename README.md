@@ -23,10 +23,10 @@ npm install
 
 Sign into Appwrite, create a new project and database; finally complete the required environment variables on _.env_ file.
 
-Start the app:
+Start the server:
 
 ```
  npx expo start
 ```
 
-Run the app on an emulator or on your phisical device using Expo Go app.
+You can run the app using Expo Go app (using an emulator or physical device)
